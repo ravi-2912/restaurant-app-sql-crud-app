@@ -35,5 +35,5 @@ if __name__ == "__main__":
     # configuration end of file
     engine = create_engine('sqlite:///restaurantmenu.db')
     # for PostgreSQL
-    # engine = create_engine("postgresql://ravi_:ravi_@localhost:5432/restaurantmenu", echo=True)
+    # engine = create_engine("postgresql://user:password@localhost:portNumber/restaurantmenu", echo=True)
     Base.metadata.create_all(engine)
