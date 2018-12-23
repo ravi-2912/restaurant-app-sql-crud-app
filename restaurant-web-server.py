@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # import nodules for server application
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs

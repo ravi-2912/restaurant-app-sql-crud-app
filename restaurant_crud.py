@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # CRUD operation on database
 # C = Create
 # R = Read
