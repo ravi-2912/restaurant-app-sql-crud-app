@@ -23,34 +23,46 @@ class MyHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             path = self.path
+            # send OK response to Client
             self.send_response(200)
             self.send_header("content-type", "text/html; charset=utf-8")
             self.end_headers()
+            # check for root address
             if path.endswith("/"):
+                # create HTML content
                 data = "<h1>Restaurant App</h1>"
                 data += "<h3>Restaurants List</h1>"
+                # loop through list of restaurants and display them
                 for r in CRUD.get_restaurants():
                     data += '''<p>
                                 {name}<br>
                                 <a href="/restaurant/{id}/edit">Edit</a>
                                 <a href="/restaurant/{id}/delete">Delete</a>
                             </p>'''.format(name=r.name, id=r.id)
+
+                # add HTML form in end to add more restaurant name
                 data += '''<h3>Add a new restaurant</h3>
                         <form method="POST">
                             <input type="text" name="name" placeholder="Type name...">
                             <button type="submit" value="INSERT">Add</button>
                         </form>'''
+            # check for root address with delete to delete a restaurant
             elif path.endswith("/delete"):
+                # get restaurant id from the path
                 r_id = int(path.split("/")[2])
                 r = CRUD.get_restaurant(r_id)
+                # create HTML content
                 data = "<h2>Are you sure you want to delete: {}?</h2>".format(r.name)
                 data += '''<form method="POST">
                             <button type="submit" value="delete" name="action">Delete</button>
                             <button type="submit" value="cancel" name="action">Cancel</button>
                         </form>'''
+            # check for root address with edit to edit a restaurant
             elif path.endswith("/edit"):
+                # get restaurant id from the path
                 r_id = int(path.split("/")[2])
                 r = CRUD.get_restaurant(r_id)
+                # create HTML content
                 data = "<h2>Are you sure you want to rename: {}?</h2>".format(r.name)
                 data += '''<form method="POST">
                             <input type="text" name="newName" placeholder="Type name...">
@@ -58,18 +70,25 @@ class MyHandler(BaseHTTPRequestHandler):
                             <button type="submit" value="cancel" name="action">Cancel</button>
                         </form>'''
 
+            # send back HTML content to Client
             self.wfile.write(html.format(data=data).encode())
             return True
         except IOError:
+            # send 404 error to Client
              self.send_error(404, 'File Not Found: %s' % self.path)
              return False
 
     def do_POST(self):
         try:
-            length = int(self.headers.get('Content-length', 0))
-            data = self.rfile.read(length).decode()
             path = self.path
+            # get message length
+            length = int(self.headers.get('Content-length', 0))
+            # read message and decode it
+            data = self.rfile.read(length).decode()
+            # parse message to object type
             message = parse_qs(data)
+
+            # conditions to execute CRUD on database
             if path.endswith("/"):
                 CRUD.create_restaurant(message["name"][0])
             elif path.endswith("/delete"):
@@ -81,6 +100,8 @@ class MyHandler(BaseHTTPRequestHandler):
                 if(message["action"][0] == "update"):
                     r_id = path.split("/")[2]
                     CRUD.update_restaurant_name(r_id, message["newName"][0])
+
+            # send redirect to root response to Client
             self.send_response(303)
             self.send_header('Location', '/')
             self.end_headers()
