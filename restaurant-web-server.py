@@ -3,8 +3,8 @@
 # import nodules for server application
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
-import requests, os
 import restaurant_crud as CRUD
+import os
 
 # basic HTML template
 html = '''
